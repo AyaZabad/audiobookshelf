@@ -4,7 +4,7 @@ module.exports.config = {
   Port: 3333,
   ConfigPath: Path.resolve('config'),
   MetadataPath: Path.resolve('metadata'),
-  FFmpegPath: '/usr/bin/ffmpeg',
-  FFProbePath: '/usr/bin/ffprobe',
+  FFmpegPath: 'c:\\ffmpeg\\bin\\ffmpeg',
+  FFProbePath: 'c:\\ffmpeg\\bin\\ffprobe',
   SkipBinariesCheck: true
 }

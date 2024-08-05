@@ -1,0 +1,62 @@
+{
+  "tags": [],
+  "chapters": [
+    {
+      "id": 0,
+      "start": 0,
+      "end": 3917.458378,
+      "title": "Part 01"
+    },
+    {
+      "id": 1,
+      "start": 3917.458378,
+      "end": 7872.611467,
+      "title": "Part 02"
+    },
+    {
+      "id": 2,
+      "start": 7872.611467,
+      "end": 11366.729467,
+      "title": "Part 03"
+    },
+    {
+      "id": 3,
+      "start": 11366.729467,
+      "end": 15174.656425,
+      "title": "Part 04"
+    },
+    {
+      "id": 4,
+      "start": 15174.656425,
+      "end": 18777.443803,
+      "title": "Part 05"
+    },
+    {
+      "id": 5,
+      "start": 18777.443803,
+      "end": 22682.833636,
+      "title": "Part 06"
+    }
+  ],
+  "title": "Elantris",
+  "subtitle": "Tenth Anniversary Author's Definitive Edition",
+  "authors": [
+    "Brandon Sanderson"
+  ],
+  "narrators": [],
+  "series": [
+    "Elantris"
+  ],
+  "genres": [
+    "Fiction"
+  ],
+  "publishedYear": "2009",
+  "publishedDate": null,
+  "publisher": "Macmillan",
+  "description": "Arriving in the kingdom of Arelon to enter a marriage of state, princess Sarene discovers that her intended has died and that she is considered his widow, leaving her a lone force against the imperial ambitions of a religious fanatic.",
+  "isbn": "9780765381026",
+  "asin": null,
+  "language": null,
+  "explicit": false,
+  "abridged": false
+}

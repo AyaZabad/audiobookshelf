@@ -42,6 +42,7 @@
 
 <script>
 export default {
+
   async asyncData({ store, params, redirect, query, app }) {
     const libraryId = params.library
     const libraryData = await store.dispatch('libraries/fetch', libraryId)
@@ -66,6 +67,7 @@ export default {
       newNarratorName: null
     }
   },
+
   computed: {
     streamLibraryItem() {
       return this.$store.state.streamLibraryItem
@@ -156,6 +158,6 @@ export default {
   mounted() {
     this.init()
   },
-  beforeDestroy() {}
+  beforeDestroy() {},
 }
 </script>

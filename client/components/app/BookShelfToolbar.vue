@@ -160,6 +160,8 @@ export default {
 
       this.addSubtitlesMenuItem(items)
 
+      console.log("The items are: " + ${items});
+
       return items
     },
     seriesSortItems() {
@@ -236,6 +238,7 @@ export default {
       return this.$store.getters['libraries/getCurrentLibraryMediaType']
     },
     isBookLibrary() {
+      console.log(this.currentLibraryMediaType);
       return this.currentLibraryMediaType === 'book'
     },
     isPodcastLibrary() {
@@ -245,6 +248,7 @@ export default {
       return this.currentLibraryMediaType === 'music'
     },
     isLibraryPage() {
+      console.log(this.page);
       return this.page === ''
     },
     isSeriesPage() {
@@ -325,6 +329,7 @@ export default {
           text: this.$strings.LabelExportOPML,
           action: 'export-opml'
         })
+        console.log(items);
       }
 
       this.addSubtitlesMenuItem(items)
