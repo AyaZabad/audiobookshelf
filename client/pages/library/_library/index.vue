@@ -13,6 +13,7 @@ export default {
     if (!library) {
       return redirect(`/oops?message=Library "${libraryId}" not found`)
     }
+
     return {
       library
     }

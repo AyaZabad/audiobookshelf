@@ -277,7 +277,8 @@ export default {
           }
         } else {
           const mediaItem = {
-            id: entity.id,
+            id:
+            entity.id,
             mediaType: entity.mediaType,
             hasTracks: entity.mediaType === 'podcast' || entity.media.audioFile || entity.media.numTracks || (entity.media.tracks && entity.media.tracks.length)
           }

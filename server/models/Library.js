@@ -148,6 +148,7 @@ class Library extends Model {
       await existingLibraryFolder.destroy()
     }
 
+    console.log(existingLibrary)
     return existingLibrary.update(library)
   }
 

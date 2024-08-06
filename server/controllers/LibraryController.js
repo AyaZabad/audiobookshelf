@@ -863,7 +863,10 @@ class LibraryController {
     res.sendStatus(200)
 
     const forceRescan = req.query.force === '1'
+
+    //NOTE: This is were the "Scan" button POST request then goes to
     await LibraryScanner.scan(req.library, forceRescan)
+    //
 
     await Database.resetLibraryIssuesFilterData(req.library.id)
     Logger.info('[LibraryController] Scan complete')
@@ -979,6 +982,7 @@ class LibraryController {
       return res.sendStatus(403)
     }
 
+    //NOTE: This is the middlewhere that the request passes through BEFORE the scan() method is called
     const library = await Database.libraryModel.getOldById(req.params.id)
     if (!library) {
       return res.status(404).send('Library not found')
