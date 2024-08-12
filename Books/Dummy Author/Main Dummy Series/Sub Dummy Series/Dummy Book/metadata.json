@@ -1,0 +1,23 @@
+{
+  "tags": [],
+  "chapters": [],
+  "title": "Dummy Book",
+  "subtitle": null,
+  "authors": [
+    "Dummy Author"
+  ],
+  "narrators": [],
+  "series": [
+    "Main Dummy Series,Sub Dummy Series"
+  ],
+  "genres": [],
+  "publishedYear": "2018",
+  "publishedDate": null,
+  "publisher": null,
+  "description": null,
+  "isbn": null,
+  "asin": null,
+  "language": null,
+  "explicit": false,
+  "abridged": false
+}

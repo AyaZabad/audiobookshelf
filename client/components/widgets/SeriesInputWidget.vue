@@ -26,9 +26,15 @@ export default {
   computed: {
     seriesItems: {
       get() {
-        this.selectedSeries = this.extractSeriesItems()
-        this.submitSeriesForm();
-        return this.extractSeriesItems()
+        // this.selectedSeries = this.extractSeriesItems()
+        // this.submitSeriesForm();
+        // return this.extractSeriesItems()
+        return (this.value || []).map((se) => {
+          return {
+            displayName: se.sequence ? `${se.name} #${se.sequence}` : se.name,
+            ...se
+          }
+        })
       },
       set(val) {
         this.$emit('input', val)
@@ -49,17 +55,17 @@ export default {
     }
   },
   methods: {
-    extractSeriesItems() {
-      return (this.value || []).flatMap((se) => {
-        let seriesNames = se.name.split(',').map(name => name.trim())
-
-        return seriesNames.map(name => ({
-          displayName: se.sequence ? `${name} #${se.sequence}` : name,
-          ...se,
-          name
-        }))
-      })
-    },
+    // extractSeriesItems() {
+    //   return (this.value || []).flatMap((se) => {
+    //     let seriesNames = se.name.split(',').map(name => name.trim())
+    //
+    //     return seriesNames.map(name => ({
+    //       displayName: se.sequence ? `${name} #${se.sequence}` : name,
+    //       ...se,
+    //       name
+    //     }))
+    //   })
+    // },
     cancelSeriesForm() {
       this.showSeriesForm = false
     }
