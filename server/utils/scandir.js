@@ -254,7 +254,7 @@ function getBookDataFromDir(relPath, parseSubtitle = false) {
 
   if (splitDir.length > 2) {
     author = splitDir.shift()
-    series = splitDir.join(':')
+    series = splitDir.join(': ')
   } else {
     series = splitDir.length > 1 ? splitDir.pop() : null // If there are at least 2 more directories, next furthest will be the series
     author = splitDir.length > 0 ? splitDir.pop() : null // There could be many more directories, but only the top 3 are used for naming /author/series/title/

@@ -110,15 +110,11 @@ export default {
         return ''
       }
 
-      if (seriesName.includes(',')) {
-        let replacedSeriesName = seriesName.replace(',', ': ')
-        console.log(replacedSeriesName)
-        this.nestedSeries = true
-        return replacedSeriesName
-      } else {
-        console.log(seriesName)
-        return seriesName
+      if (seriesName.includes(':')) {
+        this.nestedSeries = true;
       }
+
+      return seriesName
 
       // this.series?.name || ''
     },

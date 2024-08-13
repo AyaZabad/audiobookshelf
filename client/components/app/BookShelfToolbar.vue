@@ -1,36 +1,55 @@
 <template>
   <div class="w-full h-20 md:h-10 relative">
     <div class="flex md:hidden h-10 items-center">
-      <nuxt-link :to="`/library/${currentLibraryId}`" class="flex-grow h-full flex justify-center items-center" :class="isHomePage ? 'bg-primary bg-opacity-80' : 'bg-primary bg-opacity-40'">
+      <nuxt-link :to="`/library/${currentLibraryId}`" class="flex-grow h-full flex justify-center items-center"
+                 :class="isHomePage ? 'bg-primary bg-opacity-80' : 'bg-primary bg-opacity-40'">
         <p v-if="isHomePage || isPodcastLibrary" class="text-sm">{{ $strings.ButtonHome }}</p>
-        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+             stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
         </svg>
       </nuxt-link>
-      <nuxt-link :to="`/library/${currentLibraryId}/bookshelf`" class="flex-grow h-full flex justify-center items-center" :class="isLibraryPage ? 'bg-primary bg-opacity-80' : 'bg-primary bg-opacity-40'">
+      <nuxt-link :to="`/library/${currentLibraryId}/bookshelf`"
+                 class="flex-grow h-full flex justify-center items-center"
+                 :class="isLibraryPage ? 'bg-primary bg-opacity-80' : 'bg-primary bg-opacity-40'">
         <p v-if="isLibraryPage || isPodcastLibrary" class="text-sm">{{ $strings.ButtonLibrary }}</p>
-        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+             stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
         </svg>
       </nuxt-link>
-      <nuxt-link v-if="isPodcastLibrary" :to="`/library/${currentLibraryId}/podcast/latest`" class="flex-grow h-full flex justify-center items-center" :class="isPodcastLatestPage ? 'bg-primary bg-opacity-80' : 'bg-primary bg-opacity-40'">
+      <nuxt-link v-if="isPodcastLibrary" :to="`/library/${currentLibraryId}/podcast/latest`"
+                 class="flex-grow h-full flex justify-center items-center"
+                 :class="isPodcastLatestPage ? 'bg-primary bg-opacity-80' : 'bg-primary bg-opacity-40'">
         <p class="text-sm">{{ $strings.ButtonLatest }}</p>
       </nuxt-link>
-      <nuxt-link v-if="isBookLibrary" :to="`/library/${currentLibraryId}/bookshelf/series`" class="flex-grow h-full flex justify-center items-center" :class="isSeriesPage ? 'bg-primary bg-opacity-80' : 'bg-primary bg-opacity-40'">
+      <nuxt-link v-if="isBookLibrary" :to="`/library/${currentLibraryId}/bookshelf/series`"
+                 class="flex-grow h-full flex justify-center items-center"
+                 :class="isSeriesPage ? 'bg-primary bg-opacity-80' : 'bg-primary bg-opacity-40'">
         <p v-if="isSeriesPage" class="text-sm">{{ $strings.ButtonSeries }}</p>
-        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+             stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
         </svg>
       </nuxt-link>
-      <nuxt-link v-if="showPlaylists" :to="`/library/${currentLibraryId}/bookshelf/playlists`" class="flex-grow h-full flex justify-center items-center" :class="isPlaylistsPage ? 'bg-primary bg-opacity-80' : 'bg-primary bg-opacity-40'">
+      <nuxt-link v-if="showPlaylists" :to="`/library/${currentLibraryId}/bookshelf/playlists`"
+                 class="flex-grow h-full flex justify-center items-center"
+                 :class="isPlaylistsPage ? 'bg-primary bg-opacity-80' : 'bg-primary bg-opacity-40'">
         <p v-if="isPlaylistsPage || isPodcastLibrary" class="text-sm">{{ $strings.ButtonPlaylists }}</p>
         <span v-else class="material-symbols-outlined text-lg">queue_music</span>
       </nuxt-link>
-      <nuxt-link v-if="isBookLibrary" :to="`/library/${currentLibraryId}/bookshelf/collections`" class="flex-grow h-full flex justify-center items-center" :class="isCollectionsPage ? 'bg-primary bg-opacity-80' : 'bg-primary bg-opacity-40'">
+      <nuxt-link v-if="isBookLibrary" :to="`/library/${currentLibraryId}/bookshelf/collections`"
+                 class="flex-grow h-full flex justify-center items-center"
+                 :class="isCollectionsPage ? 'bg-primary bg-opacity-80' : 'bg-primary bg-opacity-40'">
         <p v-if="isCollectionsPage" class="text-sm">{{ $strings.ButtonCollections }}</p>
         <span v-else class="material-symbols-outlined text-lg">collections_bookmark</span>
       </nuxt-link>
-      <nuxt-link v-if="isBookLibrary" :to="`/library/${currentLibraryId}/authors`" class="flex-grow h-full flex justify-center items-center" :class="isAuthorsPage ? 'bg-primary bg-opacity-80' : 'bg-primary bg-opacity-40'">
+      <nuxt-link v-if="isBookLibrary" :to="`/library/${currentLibraryId}/authors`"
+                 class="flex-grow h-full flex justify-center items-center"
+                 :class="isAuthorsPage ? 'bg-primary bg-opacity-80' : 'bg-primary bg-opacity-40'">
         <p v-if="isAuthorsPage" class="text-sm">{{ $strings.ButtonAuthors }}</p>
         <svg v-else class="w-5 h-5" viewBox="0 0 24 24">
           <path
@@ -39,16 +58,22 @@
           />
         </svg>
       </nuxt-link>
-      <nuxt-link v-if="isPodcastLibrary && userIsAdminOrUp" :to="`/library/${currentLibraryId}/podcast/search`" class="flex-grow h-full flex justify-center items-center" :class="isPodcastSearchPage ? 'bg-primary bg-opacity-80' : 'bg-primary bg-opacity-40'">
+      <nuxt-link v-if="isPodcastLibrary && userIsAdminOrUp" :to="`/library/${currentLibraryId}/podcast/search`"
+                 class="flex-grow h-full flex justify-center items-center"
+                 :class="isPodcastSearchPage ? 'bg-primary bg-opacity-80' : 'bg-primary bg-opacity-40'">
         <p class="text-sm">{{ $strings.ButtonAdd }}</p>
       </nuxt-link>
     </div>
-    <div id="toolbar" class="absolute top-10 md:top-0 left-0 w-full h-10 md:h-full z-40 flex items-center justify-end md:justify-start px-2 md:px-8">
+    <div id="toolbar"
+         class="absolute top-10 md:top-0 left-0 w-full h-10 md:h-full z-40 flex items-center justify-end md:justify-start px-2 md:px-8">
       <!-- Series books page -->
       <template v-if="selectedSeries">
-        <p class="pl-2 text-base md:text-lg">
-          {{ seriesName }}
-        </p>
+        <!--    TODO: Replace hardcoded Series ID with ${series.id}-->
+        <!--    TODO: Replace hardcoded Library ID - unsure how-->
+        <ol v-for="name in seriesName" class="flex items-center whitespace-nowrap">
+          <ui-breadcrumb :label="name"
+                      to="/library/fd4e0820-dc9c-49f8-bfed-4cb23877fc32/series/c500d15f-848d-4f1c-b2b7-4a1171c12c99?filter=series.YzUwMGQxNWYtODQ4ZC00ZjFjLWIyYjctNGExMTcxYzEyYzk5"
+        </ol>
         <div class="w-6 h-6 rounded-full bg-black bg-opacity-30 flex items-center justify-center ml-3">
           <span class="font-mono">{{ numShowing }}</span>
         </div>
@@ -56,10 +81,12 @@
 
         <!-- RSS feed -->
         <ui-tooltip v-if="seriesRssFeed" :text="$strings.LabelOpenRSSFeed" direction="top">
-          <ui-icon-btn icon="rss_feed" class="mx-0.5" :size="7" icon-font-size="1.2rem" bg-color="success" outlined @click="showOpenSeriesRSSFeed" />
+          <ui-icon-btn icon="rss_feed" class="mx-0.5" :size="7" icon-font-size="1.2rem" bg-color="success" outlined
+                       @click="showOpenSeriesRSSFeed" />
         </ui-tooltip>
 
-        <ui-context-menu-dropdown v-if="!isBatchSelecting && seriesContextMenuItems.length" :items="seriesContextMenuItems" class="mx-px" @action="seriesContextMenuAction" />
+        <ui-context-menu-dropdown v-if="!isBatchSelecting && seriesContextMenuItems.length"
+                                  :items="seriesContextMenuItems" class="mx-px" @action="seriesContextMenuAction" />
       </template>
       <!-- library & collections page -->
       <template v-else-if="page !== 'search' && page !== 'podcast-search' && page !== 'recent-episodes' && !isHome">
@@ -68,48 +95,68 @@
         <div class="flex-grow hidden sm:inline-block" />
 
         <!-- library filter select -->
-        <controls-library-filter-select v-if="isLibraryPage && !isBatchSelecting" v-model="settings.filterBy" class="w-36 sm:w-44 md:w-48 h-7.5 ml-1 sm:ml-4" @change="updateFilter" />
+        <controls-library-filter-select v-if="isLibraryPage && !isBatchSelecting" v-model="settings.filterBy"
+                                        class="w-36 sm:w-44 md:w-48 h-7.5 ml-1 sm:ml-4" @change="updateFilter" />
 
         <!-- library sort select -->
-        <controls-library-sort-select v-if="isLibraryPage && !isBatchSelecting" v-model="settings.orderBy" :descending.sync="settings.orderDesc" class="w-36 sm:w-44 md:w-48 h-7.5 ml-1 sm:ml-4" @change="updateOrder" />
+        <controls-library-sort-select v-if="isLibraryPage && !isBatchSelecting" v-model="settings.orderBy"
+                                      :descending.sync="settings.orderDesc"
+                                      class="w-36 sm:w-44 md:w-48 h-7.5 ml-1 sm:ml-4" @change="updateOrder" />
 
         <!-- series filter select -->
-        <controls-library-filter-select v-if="isSeriesPage && !isBatchSelecting" v-model="settings.seriesFilterBy" is-series class="w-36 sm:w-44 md:w-48 h-7.5 ml-1 sm:ml-4" @change="updateSeriesFilter" />
+        <controls-library-filter-select v-if="isSeriesPage && !isBatchSelecting" v-model="settings.seriesFilterBy"
+                                        is-series class="w-36 sm:w-44 md:w-48 h-7.5 ml-1 sm:ml-4"
+                                        @change="updateSeriesFilter" />
 
         <!-- series sort select -->
-        <controls-sort-select v-if="isSeriesPage && !isBatchSelecting" v-model="settings.seriesSortBy" :descending.sync="settings.seriesSortDesc" :items="seriesSortItems" class="w-36 sm:w-44 md:w-48 h-7.5 ml-1 sm:ml-4" @change="updateSeriesSort" />
+        <controls-sort-select v-if="isSeriesPage && !isBatchSelecting" v-model="settings.seriesSortBy"
+                              :descending.sync="settings.seriesSortDesc" :items="seriesSortItems"
+                              class="w-36 sm:w-44 md:w-48 h-7.5 ml-1 sm:ml-4" @change="updateSeriesSort" />
 
         <!-- issues page remove all button -->
-        <ui-btn v-if="isIssuesFilter && userCanDelete && !isBatchSelecting" :loading="processingIssues" color="error" small class="ml-4" @click="removeAllIssues">{{ $strings.ButtonRemoveAll }} {{ numShowing }} {{ entityName }}</ui-btn>
+        <ui-btn v-if="isIssuesFilter && userCanDelete && !isBatchSelecting" :loading="processingIssues" color="error"
+                small class="ml-4" @click="removeAllIssues">{{ $strings.ButtonRemoveAll }} {{ numShowing }}
+          {{ entityName }}
+        </ui-btn>
 
-        <ui-context-menu-dropdown v-if="contextMenuItems.length" :items="contextMenuItems" :menu-width="110" class="ml-2" @action="contextMenuAction" />
+        <ui-context-menu-dropdown v-if="contextMenuItems.length" :items="contextMenuItems" :menu-width="110"
+                                  class="ml-2" @action="contextMenuAction" />
       </template>
       <!-- home page -->
       <template v-else-if="isHome">
         <div class="flex-grow" />
-        <ui-context-menu-dropdown v-if="contextMenuItems.length" :items="contextMenuItems" :menu-width="110" class="ml-2" @action="contextMenuAction" />
+        <ui-context-menu-dropdown v-if="contextMenuItems.length" :items="contextMenuItems" :menu-width="110"
+                                  class="ml-2" @action="contextMenuAction" />
       </template>
       <!-- search page -->
       <template v-else-if="page === 'search'">
         <div class="flex-grow" />
         <p>{{ $strings.MessageSearchResultsFor }} "{{ searchQuery }}"</p>
         <div class="flex-grow" />
-        <ui-context-menu-dropdown v-if="contextMenuItems.length" :items="contextMenuItems" :menu-width="110" class="ml-2" @action="contextMenuAction" />
+        <ui-context-menu-dropdown v-if="contextMenuItems.length" :items="contextMenuItems" :menu-width="110"
+                                  class="ml-2" @action="contextMenuAction" />
       </template>
       <!-- authors page -->
       <template v-else-if="page === 'authors'">
         <div class="flex-grow" />
-        <ui-btn v-if="userCanUpdate && authors && authors.length && !isBatchSelecting" :loading="processingAuthors" color="primary" small @click="matchAllAuthors">{{ $strings.ButtonMatchAllAuthors }}</ui-btn>
+        <ui-btn v-if="userCanUpdate && authors && authors.length && !isBatchSelecting" :loading="processingAuthors"
+                color="primary" small @click="matchAllAuthors">{{ $strings.ButtonMatchAllAuthors }}
+        </ui-btn>
 
         <!-- author sort select -->
-        <controls-sort-select v-if="authors && authors.length" v-model="settings.authorSortBy" :descending.sync="settings.authorSortDesc" :items="authorSortItems" class="w-36 sm:w-44 md:w-48 h-7.5 ml-1 sm:ml-4" @change="updateAuthorSort" />
+        <controls-sort-select v-if="authors && authors.length" v-model="settings.authorSortBy"
+                              :descending.sync="settings.authorSortDesc" :items="authorSortItems"
+                              class="w-36 sm:w-44 md:w-48 h-7.5 ml-1 sm:ml-4" @change="updateAuthorSort" />
       </template>
     </div>
   </div>
 </template>
 
 <script>
+import Breadcrumb from '~/components/ui/Breadcrumb.vue'
+
 export default {
+  components: { Breadcrumb },
   props: {
     page: String,
     isHome: Boolean,
@@ -121,7 +168,7 @@ export default {
     authors: {
       type: Array,
       default: () => []
-    }
+    },
   },
   data() {
     return {
@@ -289,7 +336,10 @@ export default {
       return this.selectedSeries ? this.selectedSeries.id : null
     },
     seriesName() {
-      return this.selectedSeries ? this.selectedSeries.name : null
+    //TODO: Prepare to receive a new property from the series object e.g. relatedSeries, which will be an array containing Series objects with names and positions or just names and their array index is their position?
+    // Testing with a dummy array of series names in the seriesName() property
+
+      return ['Series1', 'Series2', 'Series3']
     },
     seriesProgress() {
       return this.selectedSeries ? this.selectedSeries.progress : null

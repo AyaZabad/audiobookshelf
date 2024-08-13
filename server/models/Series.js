@@ -34,7 +34,7 @@ class Series extends Model {
       description: this.description,
       libraryId: this.libraryId,
       addedAt: this.createdAt.valueOf(),
-      updatedAt: this.updatedAt.valueOf()
+      updatedAt: this.updatedAt.valueOf(),
     })
   }
 
