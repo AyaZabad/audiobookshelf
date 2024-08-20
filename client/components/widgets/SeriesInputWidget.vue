@@ -1,8 +1,10 @@
 <template>
   <div>
-    <ui-multi-select-query-input v-model="seriesItems" text-key="displayName" :label="$strings.LabelSeries" :disabled="disabled" readonly show-edit @edit="editSeriesItem" @add="addNewSeries" />
+    <ui-multi-select-query-input v-model="seriesItems" text-key="displayName" :label="$strings.LabelSeries"
+                                 :disabled="disabled" readonly show-edit @edit="editSeriesItem" @add="addNewSeries" />
 
-    <modals-edit-series-input-inner-modal v-model="showSeriesForm" :selected-series="selectedSeries" :existing-series-names="existingSeriesNames" @submit="submitSeriesForm" />
+    <modals-edit-series-input-inner-modal v-model="showSeriesForm" :selected-series="selectedSeries"
+                                          :existing-series-names="existingSeriesNames" @submit="submitSeriesForm" />
   </div>
 </template>
 
@@ -24,12 +26,9 @@ export default {
   computed: {
     seriesItems: {
       get() {
-        return (this.value || []).map((se) => {
-          return {
-            displayName: se.sequence ? `${se.name} #${se.sequence}` : se.name,
-            ...se
-          }
-        })
+        this.selectedSeries = this.extractSeriesItems()
+        this.submitSeriesForm();
+        return this.extractSeriesItems()
       },
       set(val) {
         this.$emit('input', val)
@@ -37,10 +36,12 @@ export default {
     },
     series() {
       return this.filterData.series || []
-    },
+    }
+    ,
     filterData() {
       return this.$store.state.libraries.filterData || {}
-    },
+    }
+    ,
     existingSeriesNames() {
       // Only show series names not already selected
       var alreadySelectedSeriesIds = (this.value || []).map((se) => se.id)
@@ -48,9 +49,21 @@ export default {
     }
   },
   methods: {
+    extractSeriesItems() {
+      return (this.value || []).flatMap((se) => {
+        let seriesNames = se.name.split(',').map(name => name.trim())
+
+        return seriesNames.map(name => ({
+          displayName: se.sequence ? `${name} #${se.sequence}` : name,
+          ...se,
+          name
+        }))
+      })
+    },
     cancelSeriesForm() {
       this.showSeriesForm = false
-    },
+    }
+    ,
     editSeriesItem(series) {
       var _series = this.seriesItems.find((se) => se.id === series.id)
       if (!_series) return
@@ -60,7 +73,8 @@ export default {
       }
 
       this.showSeriesForm = true
-    },
+    }
+    ,
     addNewSeries() {
       this.selectedSeries = {
         id: `new-${Date.now()}`,
@@ -69,7 +83,8 @@ export default {
       }
 
       this.showSeriesForm = true
-    },
+    }
+    ,
     submitSeriesForm() {
       console.log('submit series form', this.value, this.selectedSeries)
 

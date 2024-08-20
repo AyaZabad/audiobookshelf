@@ -1,30 +1,40 @@
 <template>
   <div class="relative">
-    <div ref="shelf" class="w-full max-w-full bookshelf-row categorizedBookshelfRow relative overflow-x-scroll no-scroll overflow-y-hidden z-10" :style="{ paddingLeft: paddingLeft + 'em' }" @scroll="scrolled">
+    <div ref="shelf"
+         class="w-full max-w-full bookshelf-row categorizedBookshelfRow relative overflow-x-scroll no-scroll overflow-y-hidden z-10"
+         :style="{ paddingLeft: paddingLeft + 'em' }" @scroll="scrolled">
       <div class="w-full h-full pt-6e">
         <div v-if="shelf.type === 'book' || shelf.type === 'podcast'" class="flex items-center">
           <template v-for="(entity, index) in shelf.entities">
-            <cards-lazy-book-card :key="entity.id" :ref="`shelf-book-${entity.id}`" :index="index" :book-mount="entity" :continue-listening-shelf="continueListeningShelf" class="relative mx-2e" @hook:updated="updatedBookCard" @select="selectItem" @edit="editItem" />
+            <cards-lazy-book-card :key="entity.id" :ref="`shelf-book-${entity.id}`" :index="index" :book-mount="entity"
+                                  :continue-listening-shelf="continueListeningShelf" class="relative mx-2e"
+                                  @hook:updated="updatedBookCard" @select="selectItem" @edit="editItem" />
           </template>
         </div>
         <div v-if="shelf.type === 'episode'" class="flex items-center">
           <template v-for="(entity, index) in shelf.entities">
-            <cards-lazy-book-card :key="entity.recentEpisode.id" :ref="`shelf-episode-${entity.recentEpisode.id}`" :index="index" :book-mount="entity" :continue-listening-shelf="continueListeningShelf" class="relative mx-2e" @hook:updated="updatedBookCard" @select="selectItem" @editPodcast="editItem" @edit="editEpisode" />
+            <cards-lazy-book-card :key="entity.recentEpisode.id" :ref="`shelf-episode-${entity.recentEpisode.id}`"
+                                  :index="index" :book-mount="entity" :continue-listening-shelf="continueListeningShelf"
+                                  class="relative mx-2e" @hook:updated="updatedBookCard" @select="selectItem"
+                                  @editPodcast="editItem" @edit="editEpisode" />
           </template>
         </div>
         <div v-if="shelf.type === 'series'" class="flex items-center">
           <template v-for="entity in shelf.entities">
-            <cards-lazy-series-card :key="entity.name" :series-mount="entity" class="relative mx-2e" @hook:updated="updatedBookCard" />
+            <cards-lazy-series-card :key="entity.name" :series-mount="entity" class="relative mx-2e"
+                                    @hook:updated="updatedBookCard" />
           </template>
         </div>
         <div v-if="shelf.type === 'tags'" class="flex items-center">
           <template v-for="entity in shelf.entities">
-            <cards-group-card :key="entity.name" :group="entity" class="relative mx-2e" @hook:updated="updatedBookCard" />
+            <cards-group-card :key="entity.name" :group="entity" class="relative mx-2e"
+                              @hook:updated="updatedBookCard" />
           </template>
         </div>
         <div v-if="shelf.type === 'authors'" class="flex items-center">
           <template v-for="entity in shelf.entities">
-            <cards-author-card :key="entity.id" :author="entity" @hook:updated="updatedBookCard" class="mx-2e" @edit="editAuthor" />
+            <cards-author-card :key="entity.id" :author="entity" @hook:updated="updatedBookCard" class="mx-2e"
+                               @edit="editAuthor" />
           </template>
         </div>
         <div v-if="shelf.type === 'narrators'" class="flex items-center">
@@ -36,17 +46,22 @@
     </div>
     <div class="relative">
       <div class="relative text-center categoryPlacard transform z-30 top-0 left-4e md:left-8e w-44e rounded-md">
-        <div class="w-full h-full shinyBlack flex items-center justify-center rounded-sm border" :style="{ padding: `0em 0.5em` }">
+        <div class="w-full h-full shinyBlack flex items-center justify-center rounded-sm border"
+             :style="{ padding: `0em 0.5em` }">
           <p :style="{ fontSize: 0.9 + 'em' }">{{ $strings[shelf.labelStringKey] }}</p>
         </div>
       </div>
 
       <div class="bookshelfDividerCategorized h-6e w-full absolute top-0 left-0 right-0 z-20"></div>
     </div>
-    <div v-show="canScrollLeft && !isScrolling" class="hidden sm:flex absolute top-0 left-0 w-32 pr-8 bg-black book-shelf-arrow-left items-center justify-center cursor-pointer opacity-0 hover:opacity-100 z-40" @click="scrollLeft">
+    <div v-show="canScrollLeft && !isScrolling"
+         class="hidden sm:flex absolute top-0 left-0 w-32 pr-8 bg-black book-shelf-arrow-left items-center justify-center cursor-pointer opacity-0 hover:opacity-100 z-40"
+         @click="scrollLeft">
       <span class="material-symbols text-white" :style="{ fontSize: 3.75 + 'em' }">chevron_left</span>
     </div>
-    <div v-show="canScrollRight && !isScrolling" class="hidden sm:flex absolute top-0 right-0 w-32 pl-8 bg-black book-shelf-arrow-right items-center justify-center cursor-pointer opacity-0 hover:opacity-100 z-40" @click="scrollRight">
+    <div v-show="canScrollRight && !isScrolling"
+         class="hidden sm:flex absolute top-0 right-0 w-32 pl-8 bg-black book-shelf-arrow-right items-center justify-center cursor-pointer opacity-0 hover:opacity-100 z-40"
+         @click="scrollRight">
       <span class="material-symbols text-white" :style="{ fontSize: 3.75 + 'em' }">chevron_right</span>
     </div>
   </div>
@@ -58,7 +73,8 @@ export default {
     index: Number,
     shelf: {
       type: Object,
-      default: () => {}
+      default: () => {
+      }
     },
     continueListeningShelf: Boolean
   },
@@ -201,6 +217,7 @@ export default {
   background: rgb(48, 48, 48);
   background: linear-gradient(90deg, rgba(48, 48, 48, 0) 0%, rgba(25, 25, 25, 0.25) 8%, rgba(17, 17, 17, 0.4) 28%, rgba(17, 17, 17, 0.6) 71%, rgba(10, 10, 10, 0.6) 86%, rgba(0, 0, 0, 0.7) 100%);
 }
+
 .book-shelf-arrow-left {
   height: calc(100% - 1.5em);
   background: rgb(48, 48, 48);
