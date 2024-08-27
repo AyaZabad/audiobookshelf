@@ -73,6 +73,7 @@
         <ol v-for="name in seriesName" class="flex items-center whitespace-nowrap">
           <ui-breadcrumb :label="name"
                       to="/library/fd4e0820-dc9c-49f8-bfed-4cb23877fc32/series/c500d15f-848d-4f1c-b2b7-4a1171c12c99?filter=series.YzUwMGQxNWYtODQ4ZC00ZjFjLWIyYjctNGExMTcxYzEyYzk5"
+          ></ui-breadcrumb>
         </ol>
         <div class="w-6 h-6 rounded-full bg-black bg-opacity-30 flex items-center justify-center ml-3">
           <span class="font-mono">{{ numShowing }}</span>
