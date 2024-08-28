@@ -116,7 +116,6 @@ export default {
 
       return seriesName
 
-      // this.series?.name || ''
     },
     nameIgnorePrefix() {
       return this.series?.nameIgnorePrefix || ''
