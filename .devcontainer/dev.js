@@ -7,4 +7,5 @@ module.exports.config = {
   FFmpegPath: 'c:\\ffmpeg\\bin\\ffmpeg',
   FFProbePath: 'c:\\ffmpeg\\bin\\ffprobe',
   SkipBinariesCheck: true
+
 }
