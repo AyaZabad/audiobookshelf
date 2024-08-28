@@ -1,5 +1,5 @@
 
-const { DataTypes, Model, where, fn, col } = require('sequelize')
+const { DataTypes, Model, where, fn, col, Op } = require('sequelize')
 
 
 const oldSeries = require('../objects/entities/Series')

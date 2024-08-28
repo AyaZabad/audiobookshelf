@@ -161,7 +161,7 @@
       <template v-else-if="isHome">
         <div class="flex-grow" />
         <ui-context-menu-dropdown v-if="contextMenuItems.length" :items="contextMenuItems" :menu-width="110" class="ml-2" @action="contextMenuAction" />
->>>>>>> dongpeng-work/master
+
       </template>
     </div>
   </div>
@@ -359,6 +359,15 @@ export default {
     // Testing with a dummy array of series names in the seriesName() property
 
       return ['Series1', 'Series2', 'Series3']
+    },
+    relatedSeries(){
+      if(!this.selectedSeries){
+        return null;
+      }
+
+      if(this.selectedSeries){
+        return this.selectedSeries;
+      }
     },
     seriesProgress() {
       return this.selectedSeries ? this.selectedSeries.progress : null
