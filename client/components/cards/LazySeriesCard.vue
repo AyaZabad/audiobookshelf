@@ -110,7 +110,7 @@ export default {
         return ''
       }
 
-      if (seriesName.includes(':')) {
+      if (seriesName.includes('/')) {
         this.nestedSeries = true;
       }
 
