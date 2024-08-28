@@ -1,4 +1,6 @@
-  const { DataTypes, Model, where, fn, col } = require('sequelize')
+
+const { DataTypes, Model, where, fn, col } = require('sequelize')
+
 
 const oldSeries = require('../objects/entities/Series')
 
@@ -25,6 +27,45 @@ class Series extends Model {
   static async getAllOldSeries() {
     const series = await this.findAll()
     return series.map((se) => se.getOldSeries())
+  }
+
+  static async getAllRelatedSeries(name){
+    let parentsSeries = [];
+    //find parents series
+    if (name.indexOf("/") != -1) {
+      // we are a child series
+      let components = name.split("/");
+      while (components.length > 1) {
+        components.pop();
+        let parentName = components.join("/");
+        let elem = (await this.findOne({ where: { name: parentName }}))?.getOldSeries();
+        if (elem) {
+          parentsSeries.unshift({id: elem.id, name: elem.name});
+        }
+      }
+    }
+    //find sub series
+    let elems = (await this.findAll({
+      where: {
+        [Op.or]: [
+          {
+            name: {
+              [Op.like]: `%${name}/%`
+            }
+          },
+          {
+            name: name
+          }
+        ]
+      }
+    }))
+    .map(se => se.getOldSeries())
+    .map(se => ({id: se.id, name: se.name}))
+    .sort((a, b) => a.name.length - b.name.length)
+
+    const relatedSeries =  Array.from(new Map([...parentsSeries, ...elems].map(item => [item.id, item])).values())
+
+    return relatedSeries;
   }
 
   getOldSeries() {
