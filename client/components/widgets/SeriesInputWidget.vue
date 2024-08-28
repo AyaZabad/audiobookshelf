@@ -51,10 +51,11 @@ export default {
   methods: {
     extractSeriesItems() {
       return (this.value || []).flatMap((se) => {
-        let seriesNames = se.name.split('/').map(name => name.trim())
+        const splitSeriesNames = se.name.split('/').map(name => name.trim());
+        let joinedSeriesNames = splitSeriesNames.map((name, index) => splitSeriesNames.slice(0, index + 1).join("/"));
 
-        return seriesNames.map(name => ({
-          displayName: se.sequence ? `${name} #${se.sequence}` : name,
+        return joinedSeriesNames.map(name => ({
+          displayName: se.sequence ? `${name} #${se.sequence}` : name.split("/").pop(),
           ...se,
           name
         }))
