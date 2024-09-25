@@ -67,14 +67,10 @@
     <div id="toolbar"
          class="absolute top-10 md:top-0 left-0 w-full h-10 md:h-full z-40 flex items-center justify-end md:justify-start px-2 md:px-8">
       <!-- Series books page -->
-      <template v-if="selectedSeries">
-        <!--    TODO: Replace hardcoded Series ID with ${series.id}-->
-        <!--    TODO: Replace hardcoded Library ID - unsure how-->
-        <ol v-for="name in seriesName" class="flex items-center whitespace-nowrap">
-          <ui-breadcrumb :label="name"
-                      to="/library/fd4e0820-dc9c-49f8-bfed-4cb23877fc32/series/c500d15f-848d-4f1c-b2b7-4a1171c12c99?filter=series.YzUwMGQxNWYtODQ4ZC00ZjFjLWIyYjctNGExMTcxYzEyYzk5"
-          ></ui-breadcrumb>
-        </ol>
+      <template v-if="selectedSeries">0
+        <ui-breadcrumb :crumbs="relatedSeries"
+        ></ui-breadcrumb>
+
         <div class="w-6 h-6 rounded-full bg-black bg-opacity-30 flex items-center justify-center ml-3">
           <span class="font-mono">{{ numShowing }}</span>
         </div>
@@ -152,15 +148,20 @@
                               :descending.sync="settings.authorSortDesc" :items="authorSortItems"
                               class="w-36 sm:w-44 md:w-48 h-7.5 ml-1 sm:ml-4" @change="updateAuthorSort" />
 
-        <ui-btn v-if="userCanUpdate && authors?.length && !isBatchSelecting" :loading="processingAuthors" color="primary" small @click="matchAllAuthors">{{ $strings.ButtonMatchAllAuthors }}</ui-btn>
+        <ui-btn v-if="userCanUpdate && authors?.length && !isBatchSelecting" :loading="processingAuthors"
+                color="primary" small @click="matchAllAuthors">{{ $strings.ButtonMatchAllAuthors }}
+        </ui-btn>
 
         <!-- author sort select -->
-        <controls-sort-select v-if="authors?.length" v-model="settings.authorSortBy" :descending.sync="settings.authorSortDesc" :items="authorSortItems" class="w-36 sm:w-44 md:w-48 h-7.5 ml-1 sm:ml-4" @change="updateAuthorSort" />
+        <controls-sort-select v-if="authors?.length" v-model="settings.authorSortBy"
+                              :descending.sync="settings.authorSortDesc" :items="authorSortItems"
+                              class="w-36 sm:w-44 md:w-48 h-7.5 ml-1 sm:ml-4" @change="updateAuthorSort" />
       </template>
       <!-- home page -->
       <template v-else-if="isHome">
         <div class="flex-grow" />
-        <ui-context-menu-dropdown v-if="contextMenuItems.length" :items="contextMenuItems" :menu-width="110" class="ml-2" @action="contextMenuAction" />
+        <ui-context-menu-dropdown v-if="contextMenuItems.length" :items="contextMenuItems" :menu-width="110"
+                                  class="ml-2" @action="contextMenuAction" />
 
       </template>
     </div>
@@ -183,7 +184,7 @@ export default {
     authors: {
       type: Array,
       default: () => []
-    },
+    }
   },
   data() {
     return {
@@ -354,19 +355,31 @@ export default {
     seriesId() {
       return this.selectedSeries ? this.selectedSeries.id : null
     },
-    seriesName() {
-    //TODO: Prepare to receive a new property from the series object e.g. relatedSeries, which will be an array containing Series objects with names and positions or just names and their array index is their position?
-    // Testing with a dummy array of series names in the seriesName() property
-
-      return ['Series1', 'Series2', 'Series3']
-    },
-    relatedSeries(){
-      if(!this.selectedSeries){
-        return null;
+    relatedSeries() {
+      if (!this.selectedSeries) {
+        return null
       }
 
-      if(this.selectedSeries){
-        return this.selectedSeries;
+      if (this.selectedSeries.relatedSeries.length === 0) {
+        return null
+      }
+
+      return this.selectedSeries.relatedSeries.map((se) => {
+        return {
+          ...se,
+          name: se.name.slice(se.name.lastIndexOf('/') + 1)
+
+        }
+      })
+    },
+    relatedSeriesNames() {
+      if (this.relatedSeries) {
+        return this.relatedSeries.map((se) => se.name)
+      }
+    },
+    relatedSeriesIds() {
+      if (this.relatedSeries) {
+        return this.relatedSeries.map((se) => se.id)
       }
     },
     seriesProgress() {

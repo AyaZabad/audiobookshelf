@@ -1,4 +1,3 @@
-
 const { DataTypes, Model, where, fn, col, Op } = require('sequelize')
 
 
@@ -29,18 +28,18 @@ class Series extends Model {
     return series.map((se) => se.getOldSeries())
   }
 
-  static async getAllRelatedSeries(name){
-    let parentsSeries = [];
+  static async getAllRelatedSeries(name) {
+    let parentsSeries = []
     //find parents series
-    if (name.indexOf("/") != -1) {
+    if (name.indexOf('/') != -1) {
       // we are a child series
-      let components = name.split("/");
+      let components = name.split('/')
       while (components.length > 1) {
-        components.pop();
-        let parentName = components.join("/");
-        let elem = (await this.findOne({ where: { name: parentName }}))?.getOldSeries();
+        components.pop()
+        let parentName = components.join('/')
+        let elem = (await this.findOne({ where: { name: parentName } }))?.getOldSeries()
         if (elem) {
-          parentsSeries.unshift({id: elem.id, name: elem.name});
+          parentsSeries.unshift({ id: elem.id, name: elem.name })
         }
       }
     }
@@ -59,13 +58,20 @@ class Series extends Model {
         ]
       }
     }))
-    .map(se => se.getOldSeries())
-    .map(se => ({id: se.id, name: se.name}))
-    .sort((a, b) => a.name.length - b.name.length)
+      .map(se => se.getOldSeries())
+      .map(se => ({ id: se.id, name: se.name }))
+      .sort((a, b) => a.name.length - b.name.length)
+      .map((se, index) => {
+        let names = se.name.split('/')
+        return {
+          name: names[names.length - 1],
+          ...se
+        }
+      })
 
-    const relatedSeries =  Array.from(new Map([...parentsSeries, ...elems].map(item => [item.id, item])).values())
+    const relatedSeries = Array.from(new Map([...parentsSeries, ...elems].map(item => [item.id, item])).values())
 
-    return relatedSeries;
+    return relatedSeries
   }
 
   getOldSeries() {
@@ -75,7 +81,7 @@ class Series extends Model {
       description: this.description,
       libraryId: this.libraryId,
       addedAt: this.createdAt.valueOf(),
-      updatedAt: this.updatedAt.valueOf(),
+      updatedAt: this.updatedAt.valueOf()
     })
   }
 

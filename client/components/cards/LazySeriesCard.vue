@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!nestedSeries" cy-id="card" ref="card" :id="`series-card-${index}`" :style="{ width: cardWidth + 'px' }"
+    <div cy-id="card" ref="card" :id="`series-card-${index}`" :style="{ width: cardWidth + 'px' }"
          class="absolute rounded-sm z-30 cursor-pointer" @mousedown.prevent @mouseup.prevent @mousemove.prevent
          @mouseover="mouseover" @mouseleave="mouseleave" @click="clickCard">
       <div cy-id="covers-area" class="relative" :style="{ height: coverHeight + 'px' }">

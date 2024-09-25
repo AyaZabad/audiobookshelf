@@ -27,12 +27,6 @@ export default {
       return redirect('/oops?message=Series not found')
     }
 
-    if(series.name.includes("/")){
-     series.name = series.name.split("/");
-    } else {
-      series.name = [series.name];
-    }
-
     return {
       series,
       seriesId: params.id

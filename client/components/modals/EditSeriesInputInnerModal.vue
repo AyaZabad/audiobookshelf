@@ -34,7 +34,8 @@ export default {
     existingSeriesNames: {
       type: Array,
       default: () => []
-    }
+    },
+    isNestedSeries: Boolean
   },
   data() {
     return {
@@ -61,8 +62,15 @@ export default {
       }
     },
     isNewSeries() {
+      console.log("Edit Series Input Inner Modal:");
+      console.log(this.selectedSeries);
       if (!this.selectedSeries || !this.selectedSeries.id) return false
       return this.selectedSeries.id.startsWith('new')
+    },
+    isNestedSeries(){
+      if(this.isNestedSeries){
+        this.submitSeriesForm();
+      }
     }
   },
   methods: {

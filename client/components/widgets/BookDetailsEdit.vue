@@ -22,7 +22,7 @@
 
       <div class="flex mt-2 -mx-1">
         <div class="flex-grow px-1">
-          <widgets-series-input-widget v-model="details.series" />
+          <widgets-series-input-widget v-model="details.series"/>
         </div>
       </div>
 

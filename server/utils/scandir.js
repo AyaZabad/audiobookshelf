@@ -130,6 +130,8 @@ function groupFilesIntoLibraryItemPaths(mediaType, paths) {
     }
   }
 
+  console.log("Item Group:")
+  console.log(itemGroup)
   return itemGroup
 }
 module.exports.groupFilesIntoLibraryItemPaths = groupFilesIntoLibraryItemPaths

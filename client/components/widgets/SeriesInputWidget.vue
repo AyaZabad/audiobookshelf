@@ -3,7 +3,7 @@
     <ui-multi-select-query-input v-model="seriesItems" text-key="displayName" :label="$strings.LabelSeries"
                                  :disabled="disabled" readonly show-edit @edit="editSeriesItem" @add="addNewSeries" />
 
-    <modals-edit-series-input-inner-modal v-model="showSeriesForm" :selected-series="selectedSeries"
+    <modals-edit-series-input-inner-modal :is-nested-series="isNestedSeries" v-model="showSeriesForm" :selected-series="selectedSeries"
                                           :existing-series-names="existingSeriesNames" @submit="submitSeriesForm" />
   </div>
 </template>
@@ -20,19 +20,27 @@ export default {
   data() {
     return {
       selectedSeries: null,
-      showSeriesForm: false
+      showSeriesForm: false,
+      isNestedSeries: false
     }
   },
   computed: {
     seriesItems: {
       get() {
-        this.selectedSeries = this.extractSeriesItems()
-        this.submitSeriesForm()
-        return this.extractSeriesItems()
+        // this.selectedSeries = this.extractSeriesItems()
+        // console.log("Series Input Widget:")
+        // console.log(this.selectedSeries);
+        // return this.selectedSeries
+        return (this.value || []).map((se) => {
+          return {
+            displayName: se.sequence ? `${se.name} #${se.sequence}` : se.name,
+            ...se
+          }
+        })
       },
       set(val) {
         this.$emit('input', val)
-      }
+      },
     },
     series() {
       return this.filterData.series || []
@@ -51,11 +59,14 @@ export default {
   methods: {
     extractSeriesItems() {
       return (this.value || []).flatMap((se) => {
+        if(se.name.includes("/")){
+          this.isNestedSeries = true;
+        }
         const splitSeriesNames = se.name.split('/').map(name => name.trim());
         let joinedSeriesNames = splitSeriesNames.map((name, index) => splitSeriesNames.slice(0, index + 1).join("/"));
 
-        return joinedSeriesNames.map(name => ({
-          displayName: se.sequence ? `${name} #${se.sequence}` : name.split("/").pop(),
+        return joinedSeriesNames.map((name, index) => ({
+          displayName: se.sequence ? `${name} #${se.sequence}` : name,
           ...se,
           name
         }))

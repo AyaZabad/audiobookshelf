@@ -337,6 +337,14 @@ export default {
         for (let i = 0; i < payload.results.length; i++) {
           const index = i + startIndex
           this.entities[index] = payload.results[i]
+
+          if(this.entities[index].name) {
+            if (this.entities[index].name.includes('/')) {
+              const subSeriesName = this.entities[index].name.slice(this.entities[index].name.indexOf('/') + 1);
+              this.entities[index].name = subSeriesName;
+            }
+          }
+
           if (this.entityComponentRefs[index]) {
             this.entityComponentRefs[index].setEntity(this.entities[index])
           }

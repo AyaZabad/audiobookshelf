@@ -163,10 +163,14 @@ export default {
     },
     async updateDetails(updatedDetails) {
       this.isProcessing = true
+      console.log("Testing Update Details");
+      console.log(updatedDetails);
+      console.log(updatedDetails.updatePayload)
       var updateResult = await this.$axios.$patch(`/api/items/${this.libraryItemId}/media`, updatedDetails.updatePayload).catch((error) => {
         console.error('Failed to update', error)
         return false
       })
+      console.log(updateResult);
       this.isProcessing = false
       if (updateResult) {
         if (updateResult.updated) {
