@@ -1,16 +1,21 @@
 <template>
   <div id="bookshelf" ref="bookshelf" class="w-full overflow-y-auto" :style="{ fontSize: sizeMultiplier + 'rem' }">
     <template v-for="shelf in totalShelves">
-      <div :key="shelf" :id="`shelf-${shelf - 1}`" class="w-full px-4e sm:px-8e relative" :class="{ bookshelfRow: !isAlternativeBookshelfView }" :style="{ height: shelfHeight + 'px' }">
-        <div v-if="!isAlternativeBookshelfView" class="bookshelfDivider w-full absolute bottom-0 left-0 right-0 z-20 h-6e" />
+      <div :key="shelf" :id="`shelf-${shelf - 1}`" class="w-full px-4e sm:px-8e relative"
+           :class="{ bookshelfRow: !isAlternativeBookshelfView }" :style="{ height: shelfHeight + 'px' }">
+        <div v-if="!isAlternativeBookshelfView"
+             class="bookshelfDivider w-full absolute bottom-0 left-0 right-0 z-20 h-6e" />
       </div>
     </template>
 
-    <div v-if="initialized && !totalShelves && !hasFilter && entityName === 'items'" class="w-full flex flex-col items-center justify-center py-12">
+    <div v-if="initialized && !totalShelves && !hasFilter && entityName === 'items'"
+         class="w-full flex flex-col items-center justify-center py-12">
       <p class="text-center text-2xl mb-4 py-4">{{ $getString('MessageXLibraryIsEmpty', [libraryName]) }}</p>
       <div v-if="userIsAdminOrUp" class="flex">
         <ui-btn to="/config" color="primary" class="w-52 mr-2">{{ $strings.ButtonConfigureScanner }}</ui-btn>
-        <ui-btn color="success" class="w-52" :loading="isScanningLibrary || tempIsScanning" @click="scan">{{ $strings.ButtonScanLibrary }}</ui-btn>
+        <ui-btn color="success" class="w-52" :loading="isScanningLibrary || tempIsScanning" @click="scan">
+          {{ $strings.ButtonScanLibrary }}
+        </ui-btn>
       </div>
     </div>
     <div v-else-if="!totalShelves && initialized" class="w-full py-16">
@@ -315,10 +320,111 @@ export default {
       const sfQueryString = this.currentSFQueryString ? this.currentSFQueryString + '&' : ''
       const fullQueryString = `?${sfQueryString}limit=${this.booksPerFetch}&page=${page}&minified=1&include=rssfeed,numEpisodesIncomplete,share`
 
-      const payload = await this.$axios.$get(`/api/libraries/${this.currentLibraryId}/${entityPath}${fullQueryString}`).catch((error) => {
+      let payload = await this.$axios.$get(`/api/libraries/${this.currentLibraryId}/${entityPath}${fullQueryString}`).catch((error) => {
         console.error('failed to fetch items', error)
         return null
       })
+
+      const nestedSeriesNames = []
+      if (this.page === 'series') {
+        for (let i = 0; i < payload.results.length; i++) {
+          let seriesName = payload.results[i].name
+          if (seriesName.includes('/')) {
+            const splitSeriesNames = seriesName.split('/').map((name, index) => name.trim())
+            for (let j = 0; j < splitSeriesNames.length; j++) {
+              if (j === 0) {
+                nestedSeriesNames.push(splitSeriesNames[j])
+              } else {
+                nestedSeriesNames.push(nestedSeriesNames[j - 1] + '/' + (splitSeriesNames[j]))
+              }
+            }
+          }
+        }
+      }
+
+      const payloadSeriesNames = payload.results.map(result => result.name)
+      const allMatch = nestedSeriesNames.every(name => payloadSeriesNames.includes(name))
+
+      console.log('All Match')
+      console.log(allMatch)
+
+      if (!allMatch) {
+        const matchedName = nestedSeriesNames.find(name => payloadSeriesNames.includes(name))
+        const unmatchedNames = nestedSeriesNames.filter(name => !payloadSeriesNames.includes(name))
+        const newSeries = []
+        let oldSeries = {}
+        unmatchedNames.forEach((name) => {
+          const series = {
+            id: `new-${Date.now()}`,
+            name: name,
+            displayName: name,
+            sequence: ''
+          }
+          newSeries.push(series)
+        })
+
+        const matchedSeries = payload.results.find(result => result.name === matchedName)
+
+        if (matchedSeries) {
+          oldSeries = {
+            id: `${matchedSeries.id}`,
+            name: `${matchedSeries.name}`,
+            displayName: `${matchedSeries.name}`,
+            sequence: ''
+          }
+        }
+
+        const updatedDetails = {
+          hasChanges: true,
+          updatePayload: {
+            metadata: {
+              series: [
+                oldSeries,
+                ...newSeries
+              ]
+            }
+          }
+        }
+
+        const libraryItemId = matchedSeries.books[0].id
+        console.log('Book ID')
+        console.log(libraryItemId)
+
+        let updateResult = await this.$axios.$patch(`/api/items/${libraryItemId}/media`, updatedDetails.updatePayload).catch((error) => {
+          console.error('Failed to update', error)
+          return false
+        })
+        console.log(updateResult)
+        if (updateResult) {
+          if (updateResult.updated) {
+            this.$toast.success('Item details updated')
+            return true
+          } else {
+            this.$toast.info(this.$strings.MessageNoUpdatesWereNecessary)
+          }
+        }
+
+        payload = await this.$axios.$get(`/api/libraries/${this.currentLibraryId}/${entityPath}${fullQueryString}`).catch((error) => {
+          console.error('failed to fetch items', error)
+          return null
+        })
+
+        console.log('Updated Series')
+        console.log(updatedDetails)
+
+        console.log('New Series')
+        console.log(newSeries)
+
+        console.log('Old Series')
+        console.log(oldSeries)
+      }
+
+
+      console.log('Nested Series Names')
+      console.log(nestedSeriesNames)
+
+      console.log('Test Payload')
+      console.log(payload)
 
       this.isFetchingEntities = false
       if (this.pendingReset) {
@@ -338,11 +444,13 @@ export default {
           const index = i + startIndex
           this.entities[index] = payload.results[i]
 
-          if(this.entities[index].name) {
-            if (this.entities[index].name.includes('/')) {
-              const subSeriesName = this.entities[index].name.slice(this.entities[index].name.indexOf('/') + 1);
-              this.entities[index].name = subSeriesName;
-            }
+          console.log('Test Entities')
+          console.log(this.entities[index])
+
+          console.log('Books')
+
+          if(this.entities[index].books) {
+            this.entities[index].books.forEach(book => console.log(book))
           }
 
           if (this.entityComponentRefs[index]) {
@@ -813,7 +921,11 @@ export default {
 
     // Set bookshelf scroll position for specific bookshelf page and query
     if (window.bookshelf) {
-      this.$store.commit('setLastBookshelfScrollData', { scrollTop: window.bookshelf.scrollTop || 0, path: this.routeFullPath, name: this.page })
+      this.$store.commit('setLastBookshelfScrollData', {
+        scrollTop: window.bookshelf.scrollTop || 0,
+        path: this.routeFullPath,
+        name: this.page
+      })
     }
   }
 }
