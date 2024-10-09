@@ -370,19 +370,26 @@ export default {
 
         if (!allMatch) {
           const matchedNames = nestedSeriesNames.filter(name => payloadSeriesNames.includes(name))
+          console.log('Matched Names')
+          console.log(matchedNames)
           const unmatchedNames = nestedSeriesNames.filter(name => !payloadSeriesNames.includes(name))
-          unmatchedNames.forEach((name) => {
+          console.log('Unmatched Names')
+          console.log(unmatchedNames)
+
+          for (const unmatched_name of unmatchedNames) {
             const series = {
               id: `new-${Date.now() * Math.random()}`,
-              name: name,
-              displayName: name,
+              name: unmatched_name,
+              displayName: unmatched_name,
               sequence: ''
             }
             newSeries.push(series)
-          })
 
-          for (const matchedName of matchedNames) {
-            matchedSeries = payload.results.find(result => result.name === matchedName)
+            const matchedName = matchedNames.find(matched_name => matched_name.startsWith(`${unmatched_name}/`));
+            matchedSeries = payload.results.find(result => result.name === matchedName);
+
+            console.log('Matched Series')
+            console.log(matchedSeries)
 
             if (matchedSeries) {
               oldSeries = {
