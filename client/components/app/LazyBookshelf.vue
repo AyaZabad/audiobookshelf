@@ -381,76 +381,75 @@ export default {
             newSeries.push(series)
           })
 
-          for (const matchedNames1 of matchedNames) {
+          for (const matchedName of matchedNames) {
+            matchedSeries = payload.results.find(result => result.name === matchedName)
 
-          matchedSeries = payload.results.find(result => result.name === matchedName)
-
-          if (matchedSeries) {
-            oldSeries = {
-              id: `${matchedSeries.id}`,
-              name: `${matchedSeries.name}`,
-              displayName: `${matchedSeries.name}`,
-              sequence: ''
-            }
-          }
-
-          updatedDetails = {
-            hasChanges: true,
-            updatePayload: {
-              metadata: {
-                series: [
-                  oldSeries,
-                  ...newSeries
-                ]
+            if (matchedSeries) {
+              oldSeries = {
+                id: `${matchedSeries.id}`,
+                name: `${matchedSeries.name}`,
+                displayName: `${matchedSeries.name}`,
+                sequence: ''
               }
             }
-          }
 
-
-          if (matchedSeries && matchedSeries.books) {
-            for (const book of matchedSeries.books) {
-
-              const libraryItemId = book.id
-              console.log('Book ID')
-              console.log(libraryItemId)
-
-              let updateResult = await this.$axios.$patch(`/api/items/${libraryItemId}/media`, updatedDetails.updatePayload).catch((error) => {
-                console.error('Failed to update', error)
-                return false
-              })
-              console.log(updateResult)
-              if (updateResult) {
-                if (updateResult.updated) {
-                  this.$toast.success('Item details updated')
-                  true
-                } else {
-                  this.$toast.info(this.$strings.MessageNoUpdatesWereNecessary)
+            updatedDetails = {
+              hasChanges: true,
+              updatePayload: {
+                metadata: {
+                  series: [
+                    oldSeries,
+                    ...newSeries
+                  ]
                 }
               }
-
-              payload = await this.$axios.$get(`/api/libraries/${this.currentLibraryId}/${entityPath}${fullQueryString}`).catch((error) => {
-                console.error('failed to fetch items', error)
-                return null
-              })
             }
 
-            console.log('Updated Series')
-            console.log(updatedDetails)
 
-            console.log('New Series')
-            console.log(newSeries)
+            if (matchedSeries && matchedSeries.books) {
+              for (const book of matchedSeries.books) {
 
-            console.log('Old Series')
-            console.log(oldSeries)
+                const libraryItemId = book.id
+                console.log('Book ID')
+                console.log(libraryItemId)
+
+                let updateResult = await this.$axios.$patch(`/api/items/${libraryItemId}/media`, updatedDetails.updatePayload).catch((error) => {
+                  console.error('Failed to update', error)
+                  return false
+                })
+                console.log(updateResult)
+                if (updateResult) {
+                  if (updateResult.updated) {
+                    this.$toast.success('Item details updated')
+                    true
+                  } else {
+                    this.$toast.info(this.$strings.MessageNoUpdatesWereNecessary)
+                  }
+                }
+
+                payload = await this.$axios.$get(`/api/libraries/${this.currentLibraryId}/${entityPath}${fullQueryString}`).catch((error) => {
+                  console.error('failed to fetch items', error)
+                  return null
+                })
+              }
+
+              console.log('Updated Series')
+              console.log(updatedDetails)
+
+              console.log('New Series')
+              console.log(newSeries)
+
+              console.log('Old Series')
+              console.log(oldSeries)
 
 
-            console.log('Nested Series Names')
-            console.log(nestedSeriesNames)
+              console.log('Nested Series Names')
+              console.log(nestedSeriesNames)
 
-            console.log('Test Payload')
-            console.log(payload)
+              console.log('Test Payload')
+              console.log(payload)
 
-          }
+            }
           }
         }
       }
