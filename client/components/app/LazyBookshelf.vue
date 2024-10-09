@@ -355,7 +355,7 @@ export default {
         let oldSeries = {}
         unmatchedNames.forEach((name) => {
           const series = {
-            id: `new-${Date.now()*Math.random()}`,
+            id: `new-${Date.now() * Math.random()}`,
             name: name,
             displayName: name,
             sequence: ''
@@ -385,8 +385,10 @@ export default {
             }
           }
         }
+      }
+      for (const book of matchedSeries.books) {
 
-        const libraryItemId = matchedSeries.books[0].id
+        const libraryItemId = book.id
         console.log('Book ID')
         console.log(libraryItemId)
 
@@ -398,7 +400,7 @@ export default {
         if (updateResult) {
           if (updateResult.updated) {
             this.$toast.success('Item details updated')
-            return true
+            true
           } else {
             this.$toast.info(this.$strings.MessageNoUpdatesWereNecessary)
           }
@@ -417,14 +419,16 @@ export default {
 
         console.log('Old Series')
         console.log(oldSeries)
+
+
+        console.log('Nested Series Names')
+        console.log(nestedSeriesNames)
+
+        console.log('Test Payload')
+        console.log(payload)
+
       }
 
-
-      console.log('Nested Series Names')
-      console.log(nestedSeriesNames)
-
-      console.log('Test Payload')
-      console.log(payload)
 
       this.isFetchingEntities = false
       if (this.pendingReset) {
@@ -449,7 +453,7 @@ export default {
 
           console.log('Books')
 
-          if(this.entities[index].books) {
+          if (this.entities[index].books) {
             this.entities[index].books.forEach(book => console.log(book))
           }
 
@@ -460,22 +464,26 @@ export default {
 
         this.$eventBus.$emit('bookshelf-total-entities', this.totalEntities)
       }
-    },
+    }
+    ,
     loadPage(page) {
       this.pagesLoaded[page] = true
       this.fetchEntites(page)
-    },
+    }
+    ,
     showHideBookPlaceholder(index, show) {
       var el = document.getElementById(`book-${index}-placeholder`)
       if (el) el.style.display = show ? 'flex' : 'none'
-    },
+    }
+    ,
     mountEntites(fromIndex, toIndex) {
       for (let i = fromIndex; i < toIndex; i++) {
         if (!this.entityIndexesMounted.includes(i)) {
           this.cardsHelpers.mountEntityCard(i)
         }
       }
-    },
+    }
+    ,
     handleScroll(scrollTop) {
       this.currScrollTop = scrollTop
       var firstShelfIndex = Math.floor(scrollTop / this.shelfHeight)
@@ -506,7 +514,8 @@ export default {
         return true
       })
       this.mountEntites(firstBookIndex, lastBookIndex)
-    },
+    }
+    ,
     async resetEntities() {
       if (this.isFetchingEntities) {
         this.pendingReset = true
@@ -528,7 +537,8 @@ export default {
       await this.fetchEntites(0)
       var lastBookIndex = Math.min(this.totalEntities, this.shelvesPerPage * this.entitiesPerShelf)
       this.mountEntites(0, lastBookIndex)
-    },
+    }
+    ,
     remountEntities() {
       for (const key in this.entityComponentRefs) {
         if (this.entityComponentRefs[key]) {
@@ -539,7 +549,8 @@ export default {
       this.entityIndexesMounted.forEach((i) => {
         this.cardsHelpers.mountEntityCard(i)
       })
-    },
+    }
+    ,
     rebuild() {
       this.initSizeData()
 
@@ -558,7 +569,8 @@ export default {
       }
 
       this.$nextTick(this.remountEntities)
-    },
+    }
+    ,
     buildSearchParams() {
       if (this.page === 'search' || this.page === 'collections') {
         return ''
@@ -587,7 +599,8 @@ export default {
         }
       }
       return searchParams.toString()
-    },
+    }
+    ,
     checkUpdateSearchParams() {
       var newSearchParams = this.buildSearchParams()
       var currentQueryString = window.location.search
@@ -605,13 +618,15 @@ export default {
       }
 
       return false
-    },
+    }
+    ,
     seriesSortUpdated() {
       var wasUpdated = this.checkUpdateSearchParams()
       if (wasUpdated) {
         this.resetEntities()
       }
-    },
+    }
+    ,
     async settingsUpdated(settings) {
       await this.cardsHelpers.setCardSize()
       const wasUpdated = this.checkUpdateSearchParams()
@@ -620,17 +635,20 @@ export default {
       } else if (settings.bookshelfCoverSize !== this.currentBookWidth) {
         this.executeRebuild()
       }
-    },
+    }
+    ,
     scroll(e) {
       if (!e || !e.target) return
       var { scrollTop } = e.target
       this.handleScroll(scrollTop)
-    },
+    }
+    ,
     libraryItemAdded(libraryItem) {
       console.log('libraryItem added', libraryItem)
       // TODO: Check if audiobook would be on this shelf
       this.resetEntities()
-    },
+    }
+    ,
     libraryItemUpdated(libraryItem) {
       console.log('Item updated', libraryItem)
       if (this.entityName === 'items' || this.entityName === 'series-books') {
@@ -642,7 +660,8 @@ export default {
           }
         }
       }
-    },
+    }
+    ,
     libraryItemRemoved(libraryItem) {
       if (this.entityName === 'items' || this.entityName === 'series-books') {
         var indexOf = this.entities.findIndex((ent) => ent && ent.id === libraryItem.id)
@@ -653,22 +672,26 @@ export default {
           this.executeRebuild()
         }
       }
-    },
+    }
+    ,
     libraryItemsAdded(libraryItems) {
       console.log('items added', libraryItems)
       // TODO: Check if audiobook would be on this shelf
       this.resetEntities()
-    },
+    }
+    ,
     libraryItemsUpdated(libraryItems) {
       libraryItems.forEach((ab) => {
         this.libraryItemUpdated(ab)
       })
-    },
+    }
+    ,
     collectionAdded(collection) {
       if (this.entityName !== 'collections') return
       console.log(`[LazyBookshelf] collectionAdded ${collection.id}`, collection)
       this.resetEntities()
-    },
+    }
+    ,
     collectionUpdated(collection) {
       if (this.entityName !== 'collections') return
       console.log(`[LazyBookshelf] collectionUpdated ${collection.id}`, collection)
@@ -679,7 +702,8 @@ export default {
           this.entityComponentRefs[indexOf].setEntity(collection)
         }
       }
-    },
+    }
+    ,
     collectionRemoved(collection) {
       if (this.entityName !== 'collections') return
       console.log(`[LazyBookshelf] collectionRemoved ${collection.id}`, collection)
@@ -690,12 +714,14 @@ export default {
         this.$eventBus.$emit('bookshelf-total-entities', this.totalEntities)
         this.executeRebuild()
       }
-    },
+    }
+    ,
     playlistAdded(playlist) {
       if (this.entityName !== 'playlists') return
       console.log(`[LazyBookshelf] playlistAdded ${playlist.id}`, playlist)
       this.resetEntities()
-    },
+    }
+    ,
     playlistUpdated(playlist) {
       if (this.entityName !== 'playlists') return
       console.log(`[LazyBookshelf] playlistUpdated ${playlist.id}`, playlist)
@@ -706,7 +732,8 @@ export default {
           this.entityComponentRefs[indexOf].setEntity(playlist)
         }
       }
-    },
+    }
+    ,
     playlistRemoved(playlist) {
       if (this.entityName !== 'playlists') return
       console.log(`[LazyBookshelf] playlistRemoved ${playlist.id}`, playlist)
@@ -717,7 +744,8 @@ export default {
         this.$eventBus.$emit('bookshelf-total-entities', this.totalEntities)
         this.executeRebuild()
       }
-    },
+    }
+    ,
     shareOpen(mediaItemShare) {
       if (this.entityName === 'items' || this.entityName === 'series-books') {
         var indexOf = this.entities.findIndex((ent) => ent?.media?.id === mediaItemShare.mediaItemId)
@@ -729,7 +757,8 @@ export default {
           }
         }
       }
-    },
+    }
+    ,
     shareClosed(mediaItemShare) {
       if (this.entityName === 'items' || this.entityName === 'series-books') {
         var indexOf = this.entities.findIndex((ent) => ent?.media?.id === mediaItemShare.mediaItemId)
@@ -741,7 +770,8 @@ export default {
           }
         }
       }
-    },
+    }
+    ,
     updatePagesLoaded() {
       let numPages = Math.ceil(this.totalEntities / this.booksPerFetch)
       for (let page = 0; page < numPages; page++) {
@@ -755,7 +785,8 @@ export default {
           }
         }
       }
-    },
+    }
+    ,
     initSizeData(_bookshelf) {
       var bookshelf = _bookshelf || document.getElementById('bookshelf')
       if (!bookshelf) {
@@ -785,7 +816,8 @@ export default {
         this.totalShelves = Math.ceil(this.totalEntities / this.entitiesPerShelf)
       }
       return entitiesPerShelfBefore < this.entitiesPerShelf // Books per shelf has changed
-    },
+    }
+    ,
     async init(bookshelf) {
       this.initSizeData(bookshelf)
       this.checkUpdateSearchParams()
@@ -803,20 +835,24 @@ export default {
           window.bookshelf.scrollTop = scrollTop
         }
       }
-    },
+    }
+    ,
     executeRebuild() {
       clearTimeout(this.resizeTimeout)
       this.resizeTimeout = setTimeout(() => {
         this.rebuild()
       }, 200)
-    },
+    }
+    ,
     windowResize() {
       this.executeRebuild()
-    },
+    }
+    ,
     socketInit() {
       // Server settings are set on socket init
       this.executeRebuild()
-    },
+    }
+    ,
     initListeners() {
       window.addEventListener('resize', this.windowResize)
 
@@ -849,7 +885,8 @@ export default {
       } else {
         console.error('Bookshelf - Socket not initialized')
       }
-    },
+    }
+    ,
     removeListeners() {
       window.removeEventListener('resize', this.windowResize)
       var bookshelf = document.getElementById('bookshelf')
@@ -878,14 +915,16 @@ export default {
       } else {
         console.error('Bookshelf - Socket not initialized')
       }
-    },
+    }
+    ,
     destroyEntityComponents() {
       for (const key in this.entityComponentRefs) {
         if (this.entityComponentRefs[key] && this.entityComponentRefs[key].destroy) {
           this.entityComponentRefs[key].destroy()
         }
       }
-    },
+    }
+    ,
     scan() {
       this.tempIsScanning = true
       this.$store
