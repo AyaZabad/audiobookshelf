@@ -352,11 +352,13 @@ export default {
 
       let updatedDetails = {};
 
+      let newSeries = [];
+
+      let oldSeries = {};
+
       if (!allMatch) {
         const matchedName = nestedSeriesNames.find(name => payloadSeriesNames.includes(name))
         const unmatchedNames = nestedSeriesNames.filter(name => !payloadSeriesNames.includes(name))
-        const newSeries = []
-        let oldSeries = {}
         unmatchedNames.forEach((name) => {
           const series = {
             id: `new-${Date.now() * Math.random()}`,
