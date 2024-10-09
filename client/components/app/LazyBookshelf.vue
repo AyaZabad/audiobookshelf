@@ -325,22 +325,31 @@ export default {
         return null
       })
 
-      const nestedSeriesNames = []
+      const nestedSeriesNames = [];
       if (this.page === 'series') {
         for (let i = 0; i < payload.results.length; i++) {
           let seriesName = payload.results[i].name
+          console.log("Series Name");
+          console.log(seriesName);
           if (seriesName.includes('/')) {
             const splitSeriesNames = seriesName.split('/').map((name, index) => name.trim())
             for (let j = 0; j < splitSeriesNames.length; j++) {
               if (j === 0) {
                 nestedSeriesNames.push(splitSeriesNames[j])
+                console.log("Nested Series Names Add")
+                console.log(nestedSeriesNames);
               } else {
                 nestedSeriesNames.push(nestedSeriesNames[j - 1] + '/' + (splitSeriesNames[j]))
+                console.log("Nested Series Names Add")
+                console.log(nestedSeriesNames);
               }
             }
           }
         }
       }
+
+      console.log("Nested Series Names Final")
+      console.log(nestedSeriesNames);
 
       const payloadSeriesNames = payload.results.map(result => result.name)
       const allMatch = nestedSeriesNames.every(name => payloadSeriesNames.includes(name))
@@ -349,11 +358,8 @@ export default {
       console.log(allMatch)
 
       let matchedSeries = {};
-
       let updatedDetails = {};
-
       let newSeries = [];
-
       let oldSeries = {};
 
       if (!allMatch) {
