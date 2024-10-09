@@ -355,7 +355,7 @@ export default {
         let oldSeries = {}
         unmatchedNames.forEach((name) => {
           const series = {
-            id: `new-${Date.now()}`,
+            id: `new-${Date.now()*Math.random()}`,
             name: name,
             displayName: name,
             sequence: ''
