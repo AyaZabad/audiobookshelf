@@ -350,6 +350,8 @@ export default {
 
       let matchedSeries = {};
 
+      let updatedDetails = {};
+
       if (!allMatch) {
         const matchedName = nestedSeriesNames.find(name => payloadSeriesNames.includes(name))
         const unmatchedNames = nestedSeriesNames.filter(name => !payloadSeriesNames.includes(name))
@@ -376,7 +378,7 @@ export default {
           }
         }
 
-        const updatedDetails = {
+        updatedDetails = {
           hasChanges: true,
           updatePayload: {
             metadata: {
