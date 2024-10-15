@@ -55,8 +55,6 @@ class ApiRouter {
     this.rssFeedManager = Server.rssFeedManager
     /** @type {import('../managers/CronManager')} */
     this.cronManager = Server.cronManager
-    /** @type {import('../managers/NotificationManager')} */
-    this.notificationManager = Server.notificationManager
     /** @type {import('../managers/EmailManager')} */
     this.emailManager = Server.emailManager
     this.apiCacheManager = Server.apiCacheManager
@@ -102,6 +100,7 @@ class ApiRouter {
     this.router.get('/libraries/:id/opml', LibraryController.middleware.bind(this), LibraryController.getOPMLFile.bind(this))
     this.router.post('/libraries/order', LibraryController.reorder.bind(this))
     this.router.post('/libraries/:id/remove-metadata', LibraryController.middleware.bind(this), LibraryController.removeAllMetadataFiles.bind(this))
+    this.router.get('/libraries/:id/podcast-titles', LibraryController.middleware.bind(this), LibraryController.getPodcastTitles.bind(this))
 
     //
     // Item Routes

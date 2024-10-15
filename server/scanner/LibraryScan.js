@@ -18,7 +18,6 @@ class LibraryScan {
     this.startedAt = null
     this.finishedAt = null
     this.elapsed = null
-    this.error = null
 
     this.resultsMissing = 0
     this.resultsAdded = 0
@@ -55,33 +54,27 @@ class LibraryScan {
   get elapsedTimestamp() {
     return secondsToTimestamp(this.elapsed / 1000)
   }
-  get getScanEmitData() {
-    return {
-      id: this.libraryId,
-      type: this.type,
-      name: this.libraryName,
-      error: this.error,
-      results: {
-        added: this.resultsAdded,
-        updated: this.resultsUpdated,
-        missing: this.resultsMissing
-      }
-    }
-  }
-  get totalResults() {
-    return this.resultsAdded + this.resultsUpdated + this.resultsMissing
-  }
   get logFilename() {
     return date.format(new Date(), 'YYYY-MM-DD') + '_' + this.id + '.txt'
   }
   get scanResultsString() {
-    if (this.error) return this.error
     const strs = []
     if (this.resultsAdded) strs.push(`${this.resultsAdded} added`)
     if (this.resultsUpdated) strs.push(`${this.resultsUpdated} updated`)
     if (this.resultsMissing) strs.push(`${this.resultsMissing} missing`)
-    if (!strs.length) return `Everything was up to date (${elapsedPretty(this.elapsed / 1000)})`
-    return strs.join(', ') + ` (${elapsedPretty(this.elapsed / 1000)})`
+    const changesDetected = strs.length > 0 ? strs.join(', ') : 'No changes needed'
+    const timeElapsed = `(${elapsedPretty(this.elapsed / 1000)})`
+    return `${changesDetected} ${timeElapsed}`
+  }
+
+  get scanResults() {
+    return {
+      added: this.resultsAdded,
+      updated: this.resultsUpdated,
+      missing: this.resultsMissing,
+      elapsed: this.elapsed,
+      text: this.scanResultsString
+    }
   }
 
   toJSON() {
@@ -92,7 +85,6 @@ class LibraryScan {
       startedAt: this.startedAt,
       finishedAt: this.finishedAt,
       elapsed: this.elapsed,
-      error: this.error,
       resultsAdded: this.resultsAdded,
       resultsUpdated: this.resultsUpdated,
       resultsMissing: this.resultsMissing
@@ -112,14 +104,9 @@ class LibraryScan {
     this.startedAt = Date.now()
   }
 
-  /**
-   *
-   * @param {string} error
-   */
-  setComplete(error = null) {
+  setComplete() {
     this.finishedAt = Date.now()
     this.elapsed = this.finishedAt - this.startedAt
-    this.error = error
   }
 
   getLogLevelString(level) {

@@ -8,6 +8,8 @@ const Logger = require('./Logger')
 const dbMigration = require('./utils/migrations/dbMigration')
 const Auth = require('./Auth')
 
+const MigrationManager = require('./managers/MigrationManager')
+
 class Database {
   constructor() {
     this.sequelize = null
@@ -26,6 +28,9 @@ class Database {
     this.notificationSettings = null
     /** @type {import('./objects/settings/EmailSettings')} */
     this.emailSettings = null
+
+    this.supportsUnaccent = false
+    this.supportsUnicodeFoldings = false
   }
 
   get models() {
@@ -142,6 +147,11 @@ class Database {
     return this.models.mediaItemShare
   }
 
+  /** @type {typeof import('./models/Device')} */
+  get deviceModel() {
+    return this.models.device
+  }
+
   /**
    * Check if db file exists
    * @returns {boolean}
@@ -166,6 +176,15 @@ class Database {
 
     if (!(await this.connect())) {
       throw new Error('Database connection failed')
+    }
+
+    try {
+      const migrationManager = new MigrationManager(this.sequelize, this.isNew, global.ConfigPath)
+      await migrationManager.init(packageJson.version)
+      await migrationManager.runMigrations()
+    } catch (error) {
+      Logger.error(`[Database] Failed to run migrations`, error)
+      throw new Error('Database migration failed')
     }
 
     await this.buildModels(force)
@@ -207,6 +226,12 @@ class Database {
 
     try {
       await this.sequelize.authenticate()
+      if (process.env.NUSQLITE3_PATH) {
+        await this.loadExtension(process.env.NUSQLITE3_PATH)
+        Logger.info(`[Database] Db supports unaccent and unicode foldings`)
+        this.supportsUnaccent = true
+        this.supportsUnicodeFoldings = true
+      }
       Logger.info(`[Database] Db connection was successful`)
       return true
     } catch (error) {
@@ -216,10 +241,9 @@ class Database {
   }
 
   /**
-   * TODO: Temporarily disabled
-   * @param {string[]} extensions paths to extension binaries
+   * @param {string} extension paths to extension binary
    */
-  async loadExtensions(extensions) {
+  async loadExtension(extension) {
     // This is a hack to get the db connection for loading extensions.
     // The proper way would be to use the 'afterConnect' hook, but that hook is never called for sqlite due to a bug in sequelize.
     // See https://github.com/sequelize/sequelize/issues/12487
@@ -227,20 +251,18 @@ class Database {
     const db = await this.sequelize.dialect.connectionManager.getConnection()
     if (typeof db?.loadExtension !== 'function') throw new Error('Failed to get db connection for loading extensions')
 
-    for (const ext of extensions) {
-      Logger.info(`[Database] Loading extension ${ext}`)
-      await new Promise((resolve, reject) => {
-        db.loadExtension(ext, (err) => {
-          if (err) {
-            Logger.error(`[Database] Failed to load extension ${ext}`, err)
-            reject(err)
-            return
-          }
-          Logger.info(`[Database] Successfully loaded extension ${ext}`)
-          resolve()
-        })
+    Logger.info(`[Database] Loading extension ${extension}`)
+    await new Promise((resolve, reject) => {
+      db.loadExtension(extension, (err) => {
+        if (err) {
+          Logger.error(`[Database] Failed to load extension ${extension}`, err)
+          reject(err)
+          return
+        }
+        Logger.info(`[Database] Successfully loaded extension ${extension}`)
+        resolve()
       })
-    }
+    })
   }
 
   /**
@@ -478,21 +500,6 @@ class Database {
     return this.models.playbackSession.removeById(sessionId)
   }
 
-  getDeviceByDeviceId(deviceId) {
-    if (!this.sequelize) return false
-    return this.models.device.getOldDeviceByDeviceId(deviceId)
-  }
-
-  updateDevice(oldDevice) {
-    if (!this.sequelize) return false
-    return this.models.device.updateFromOld(oldDevice)
-  }
-
-  createDevice(oldDevice) {
-    if (!this.sequelize) return false
-    return this.models.device.createFromOld(oldDevice)
-  }
-
   replaceTagInFilterData(oldTag, newTag) {
     for (const libraryId in this.libraryFilterData) {
       const indexOf = this.libraryFilterData[libraryId].tags.findIndex((n) => n === oldTag)
@@ -598,6 +605,11 @@ class Database {
   addPublisherToFilterData(libraryId, publisher) {
     if (!this.libraryFilterData[libraryId] || !publisher || this.libraryFilterData[libraryId].publishers.includes(publisher)) return
     this.libraryFilterData[libraryId].publishers.push(publisher)
+  }
+
+  addPublishedDecadeToFilterData(libraryId, decade) {
+    if (!this.libraryFilterData[libraryId] || !decade || this.libraryFilterData[libraryId].publishedDecades.includes(decade)) return
+    this.libraryFilterData[libraryId].publishedDecades.push(decade)
   }
 
   addLanguageToFilterData(libraryId, language) {
@@ -744,37 +756,57 @@ class Database {
     }
   }
 
-  /**
-   * TODO: Temporarily unused
-   * @param {string} value
-   * @returns {string}
-   */
-  normalize(value) {
-    return `lower(unaccent(${value}))`
+  async createTextSearchQuery(query) {
+    const textQuery = new this.TextSearchQuery(this.sequelize, this.supportsUnaccent, query)
+    await textQuery.init()
+    return textQuery
   }
 
-  /**
-   * TODO: Temporarily unused
-   * @param {string} query
-   * @returns {Promise<string>}
-   */
-  async getNormalizedQuery(query) {
-    const escapedQuery = this.sequelize.escape(query)
-    const normalizedQuery = this.normalize(escapedQuery)
-    const normalizedQueryResult = await this.sequelize.query(`SELECT ${normalizedQuery} as normalized_query`)
-    return normalizedQueryResult[0][0].normalized_query
-  }
+  TextSearchQuery = class {
+    constructor(sequelize, supportsUnaccent, query) {
+      this.sequelize = sequelize
+      this.supportsUnaccent = supportsUnaccent
+      this.query = query
+      this.hasAccents = false
+    }
 
-  /**
-   *
-   * @param {string} column
-   * @param {string} normalizedQuery
-   * @returns {string}
-   */
-  matchExpression(column, normalizedQuery) {
-    const normalizedPattern = this.sequelize.escape(`%${normalizedQuery}%`)
-    const normalizedColumn = column
-    return `${normalizedColumn} LIKE ${normalizedPattern}`
+    /**
+     * Returns a normalized (accents-removed) expression for the specified value.
+     *
+     * @param {string} value
+     * @returns {string}
+     */
+    normalize(value) {
+      return `unaccent(${value})`
+    }
+
+    /**
+     * Initialize the text query.
+     *
+     */
+    async init() {
+      if (!this.supportsUnaccent) return
+      const escapedQuery = this.sequelize.escape(this.query)
+      const normalizedQueryExpression = this.normalize(escapedQuery)
+      const normalizedQueryResult = await this.sequelize.query(`SELECT ${normalizedQueryExpression} as normalized_query`)
+      const normalizedQuery = normalizedQueryResult[0][0].normalized_query
+      this.hasAccents = escapedQuery !== this.sequelize.escape(normalizedQuery)
+    }
+
+    /**
+     * Get match expression for the specified column.
+     * If the query contains accents, match against the column as-is (case-insensitive exact match).
+     * otherwise match against a normalized column (case-insensitive match with accents removed).
+     *
+     * @param {string} column
+     * @returns {string}
+     */
+    matchExpression(column) {
+      const pattern = this.sequelize.escape(`%${this.query}%`)
+      if (!this.supportsUnaccent) return `${column} LIKE ${pattern}`
+      const normalizedColumn = this.hasAccents ? column : this.normalize(column)
+      return `${normalizedColumn} LIKE ${pattern}`
+    }
   }
 }
 

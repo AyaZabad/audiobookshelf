@@ -590,6 +590,10 @@ class BookScanner {
     Database.addPublisherToFilterData(libraryItemData.libraryId, libraryItem.book.publisher)
     Database.addLanguageToFilterData(libraryItemData.libraryId, libraryItem.book.language)
 
+    const publishedYear = libraryItem.book.publishedYear
+    const decade = publishedYear ? `${Math.floor(publishedYear / 10) * 10}` : null
+    Database.addPublishedDecadeToFilterData(libraryItemData.libraryId, decade)
+
     // Load for emitting to client
     libraryItem.media = await libraryItem.getMedia({
       include: [
@@ -655,7 +659,7 @@ class BookScanner {
     }
 
     const bookMetadataSourceHandler = new BookScanner.BookMetadataSourceHandler(bookMetadata, audioFiles, ebookFileScanData, libraryItemData, libraryScan, existingLibraryItemId)
-    const metadataPrecedence = librarySettings.metadataPrecedence || ['folderStructure', 'audioMetatags', 'nfoFile', 'txtFiles', 'opfFile', 'absMetadata']
+    const metadataPrecedence = librarySettings.metadataPrecedence || Database.libraryModel.defaultMetadataPrecedence
     libraryScan.addLog(LogLevel.DEBUG, `"${bookMetadata.title}" Getting metadata with precedence [${metadataPrecedence.join(', ')}]`)
     for (const metadataSource of metadataPrecedence) {
       if (bookMetadataSourceHandler[metadataSource]) {
